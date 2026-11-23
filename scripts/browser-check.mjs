@@ -19,6 +19,13 @@ try {
   await page.evaluate(() => document.fonts.ready);
   for (const width of [1440, 1024, 820, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
+    // Allow responsive layout and font metrics to settle after a viewport change.
+    await page.evaluate(
+      () =>
+        new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve)),
+        ),
+    );
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > innerWidth,
     );
