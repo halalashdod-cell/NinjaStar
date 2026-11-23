@@ -32,6 +32,8 @@ npm run verify:browser
 - Photos and logo come from the existing `ninja-star.co.il`; source URLs are listed in `public/images/sources.json`.
 - Branch imagery is illustrative from the Ninja Star network. Confirm branch-specific photographs before production.
 - The local Rubik variable font is downloaded from Google Fonts by `scripts/download-assets.mjs`.
+- The visual reference is the screen **Ninja Star — All-Star Navy, Deep Red & Blue** in the Stitch project **Ninja Star Homepage Redesign** (`489337128627221470`, screen `node_16556165105544864630`). Its centred hero, navy surfaces, blue highlights, deep-red accents, and Rubik/Heebo typography are applied throughout the site.
+- `scripts/download-stitch-assets.mjs` downloads the reference hero illustration and local Heebo font files, with a font license and image-source record. The hero is labelled as an atmospheric illustration; the facilities and branch sections retain venue photographs and existing business content.
 - The demo omits gifts, shopping carts, checkout, account pages, author archives and other unused WordPress pages.
 - The participation page remains at `/enter/` and is linked from pricing, not the main navigation. It is explicitly a demonstration and creates no legal participation record.
 

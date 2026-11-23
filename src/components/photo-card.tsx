@@ -10,14 +10,16 @@ export function AttractionCard({
 }) {
   return (
     <Link className="attraction-card" href={`/${attraction.slug}/`}>
-      <Image
-        src={attraction.image}
-        alt={attraction.title + " בנינג׳ה סטאר"}
-        fill
-        sizes="(max-width: 650px) 90vw, (max-width: 1000px) 45vw, 30vw"
-      />
-      <div className="photo-shade" />
-      <span className="attraction-tag">{attraction.tag}</span>
+      <div className="attraction-card-image">
+        <Image
+          src={attraction.image}
+          alt={attraction.title + " בנינג׳ה סטאר"}
+          fill
+          sizes="(max-width: 650px) 90vw, (max-width: 1000px) 45vw, 30vw"
+        />
+        <div className="photo-shade" />
+        <span className="attraction-tag">{attraction.tag}</span>
+      </div>
       <div className="attraction-card-content">
         <div>
           <p>{attraction.label}</p>

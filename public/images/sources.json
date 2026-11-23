@@ -19,5 +19,15 @@
     "climbing.jpg": "2020/06/ninja_kir_3.jpg"
   },
   "fetched": "2026-11-23",
-  "note": "Images from the existing Ninja Star website. Venue images are illustrative; verify branch assignment before launch."
+  "note": "Images from the existing Ninja Star website. Venue images are illustrative; verify branch assignment before launch.",
+  "stitch": {
+    "project": "489337128627221470",
+    "screen": "node_16556165105544864630",
+    "title": "Ninja Star — All-Star Navy, Deep Red & Blue",
+    "hero": {
+      "file": "stitch-arena.jpg",
+      "url": "https://lh3.googleusercontent.com/aida/ALJJyrAjWyPhoRiRig581yuz5Q2SAreaac3I0SmbLFb5uLgEgYvvPkO2Jz0fmrzpIh3z4QQgBTKTzLyUIjETcwZSdf0Gkpcx3IahNm_nj7u2YbuATOT7H9ep0Ls36ORqC7e2B-l6Vd_OSgXorzbk-FJ3NDjUcdbpb7_f9rW_GczIdrQAt6eq6lJ6-4uF--edlEUx0Jodehn05BJGQ41O1qKrNh6uNqOqEljYl1qo1CAxdPo8_H3nzdQzwolhcFqHFbwirqhX7g",
+      "note": "Atmospheric illustration imported from the user-selected Stitch design; not a photograph of a specific Ninja Star branch."
+    }
+  }
 }

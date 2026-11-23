@@ -4,6 +4,7 @@ import { branches, attractions, contact, faqs, paths } from "@/lib/content";
 import { Icon, NinjaStar } from "./icon";
 import { LeadForm } from "./lead-form";
 import { AttractionCard } from "./photo-card";
+import { BrandMark } from "./brand-mark";
 
 export function SectionHeading({
   eyebrow,
@@ -259,12 +260,13 @@ export function Footer() {
       <footer className="site-footer">
         <div className="container footer-top">
           <div className="footer-brand">
-            <Image
-              src="/images/logo.png"
-              alt="Ninja Star"
-              width={100}
-              height={82}
-            />
+            <Link
+              className="brand"
+              href="/"
+              aria-label="נינג׳ה סטאר — עמוד הבית"
+            >
+              <BrandMark />
+            </Link>
             <p>
               יותר תנועה. יותר ביחד.
               <br />

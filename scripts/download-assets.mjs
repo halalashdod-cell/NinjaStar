@@ -1,4 +1,4 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 
 const origin = "https://ninja-star.co.il/wp-content/uploads/";
 const assets = {
@@ -71,10 +71,14 @@ const license = await fetch(
 );
 if (!license.ok) throw new Error("Could not download Rubik font license");
 await writeFile("public/fonts/OFL.txt", await license.text());
+const previousSources = await readFile("public/images/sources.json", "utf8")
+  .then(JSON.parse)
+  .catch(() => ({}));
 await writeFile(
   "public/images/sources.json",
   JSON.stringify(
     {
+      ...previousSources,
       origin,
       assets,
       fetched: "2026-11-23",

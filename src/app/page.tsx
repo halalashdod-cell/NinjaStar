@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { attractions, paths } from "@/lib/content";
-import { Icon, NinjaStar } from "@/components/icon";
+import { Icon } from "@/components/icon";
 import { AttractionCard } from "@/components/photo-card";
 import {
   BranchPicker,
@@ -21,62 +21,44 @@ export default function Home() {
       <section className="hero">
         <Image
           className="hero-image"
-          src="/images/park.jpg"
-          alt="ילדים גולשים ומשחקים בבריכת הכדורים של נינג׳ה סטאר"
+          src="/images/stitch-arena.jpg"
+          alt="הדמיית אווירה של זירת נינג׳ה בתאורת כחול ואדום"
           fill
           priority
           sizes="100vw"
-          quality={85}
         />
         <div className="hero-shade" />
         <div className="container hero-inner">
           <div className="hero-copy">
-            <p className="hero-eyebrow">
-              <span />
-              נינג׳ה סטאר. הרבה יותר מיום כיף.
-            </p>
             <h1>
-              קופצים.
-              <br />
-              מטפסים.
-              <br />
-              <span>חוגגים.</span>
+              ברוכים הבאים
+              <span>לנינג׳ה סטאר</span>
             </h1>
+            <div className="hero-ribbon">
+              <p>
+                נינג׳ה, טרמפולינות וימי הולדת <span aria-hidden="true">•</span>{" "}
+                חוויה לכל המשפחה
+              </p>
+            </div>
             <p className="hero-description">
-              פחות מסכים. יותר רגעים ביחד.
-              <br />
-              עולם של אתגרים וחוויות לכל המשפחה.
+              קופצים, מטפסים וחוגגים יחד. עולם של מתקנים ואתגרים, משחקים וימי
+              הולדת בסניפי רחובות, אשדוד והוד השרון — חוויות שכולם זוכרים.
             </p>
             <div className="hero-actions">
-              <a href="#branches" className="button button-red">
-                <Icon name="pin" size={18} />
-                איפה נפגשים?
-              </a>
-              <Link href={paths.birthdays} className="button button-glass">
+              <Link
+                href={`${paths.birthdays}#enquiry`}
+                className="button button-blue"
+              >
                 <Icon name="cake" size={18} />
-                יש סיבה לחגיגה
+                מתכננים חגיגה
+              </Link>
+              <Link href={paths.pricing} className="button button-red">
+                מחירים וכניסה
               </Link>
             </div>
-            <div className="hero-footnote">
-              <Icon name="sparkles" size={16} />
-              <span>רחובות</span>
-              <i /> <span>אשדוד</span>
-              <i />
-              <span>הוד השרון</span>
-            </div>
           </div>
-          <div className="hero-sticker">
-            <NinjaStar />
-            <span>
-              כאן
-              <br />
-              מוציאים
-              <br />
-              <strong>אנרגיה!</strong>
-            </span>
-          </div>
-          <span className="hero-photo-credit">הרגעים שלנו. החוויות שלכם.</span>
         </div>
+        <span className="hero-photo-credit">תמונת אווירה</span>
       </section>
       <BranchPicker />
       <section className="section container attractions-home">

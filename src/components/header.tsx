@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { branches, paths, contact } from "@/lib/content";
 import { Icon } from "./icon";
+import { BrandMark } from "./brand-mark";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -20,9 +20,6 @@ export function Header() {
       <a className="skip-link" href="#main">
         דילוג לתוכן
       </a>
-      <div className="demo-strip">
-        מכירים את נינג׳ה סטאר מחדש <span>·</span> גרסת הדגמה
-      </div>
       <header className="site-header">
         <div className="header-inner container">
           <Link
@@ -31,13 +28,7 @@ export function Header() {
             aria-label="נינג׳ה סטאר — עמוד הבית"
             onClick={close}
           >
-            <Image
-              src="/images/logo.png"
-              alt="Ninja Star"
-              width={88}
-              height={72}
-              priority
-            />
+            <BrandMark />
           </Link>
           <nav className="desktop-nav" aria-label="ניווט ראשי">
             <div
@@ -101,7 +92,7 @@ export function Header() {
               <span dir="ltr">{contact.phone}</span>
             </a>
             <Link
-              className="button button-red header-cta"
+              className="button button-blue header-cta"
               href={`${paths.birthdays}#enquiry`}
             >
               <Icon name="cake" size={17} />
