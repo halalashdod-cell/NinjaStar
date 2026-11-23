@@ -1,0 +1,23 @@
+{
+  "origin": "https://ninja-star.co.il/wp-content/uploads/",
+  "assets": {
+    "logo.png": "2020/06/newlogo.png",
+    "hero.jpg": "2024/10/WhatsApp-Image-2024-10-03-at-10.15.22.jpeg",
+    "park.jpg": "2021/07/DSC01591-scaled.jpg",
+    "rehovot.jpg": "2024/10/WhatsApp-Image-2024-10-03-at-10.15.14.jpeg",
+    "ashdod.jpg": "2021/07/DSC01409_800x534.jpg",
+    "hod-hasharon.jpg": "2024/10/WhatsApp-Image-2024-10-03-at-10.15.23.jpeg",
+    "venue.jpg": "2024/09/WhatsApp-Image-2024-09-03-at-12.43.21.jpeg",
+    "birthday.jpg": "2020/06/birthday2-768x512.jpg",
+    "birthday-room.jpg": "2020/06/birthday-1-768x512.jpg",
+    "trampolines.jpg": "2024/03/45.jpeg",
+    "ninja.jpg": "2024/03/WhatsApp-Image-2024-03-13-at-10.51.28-1.jpeg",
+    "ball-pool.jpg": "2024/03/WhatsApp-Image-2024-03-13-at-10.51.28.jpeg",
+    "cars.jpg": "2024/03/WhatsApp-Image-2024-03-13-at-10.40.37-2.jpeg",
+    "kids.jpg": "2020/06/kids2.jpg",
+    "foam.jpg": "2020/06/gomi.jpg",
+    "climbing.jpg": "2020/06/ninja_kir_3.jpg"
+  },
+  "fetched": "2026-11-23",
+  "note": "Images from the existing Ninja Star website. Venue images are illustrative; verify branch assignment before launch."
+}
