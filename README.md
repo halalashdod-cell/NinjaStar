@@ -2,6 +2,10 @@
 
 Hebrew RTL Next.js website for Ninja Star. Built for Vercel, with the retained production URL paths and local copies of the existing website's photographs and logo.
 
+Demo: https://ninja-star-demo.vercel.app
+
+Repository: https://github.com/halalashdod-cell/NinjaStar
+
 ## Development
 
 Use Node.js 22 or later (Node.js 24 recommended).
@@ -55,3 +59,5 @@ When connecting Supabase later, replace the demo boundary in `src/app/api/leads/
 The intended repository owner is `halalashdod-cell`. Use the dedicated local SSH key `~/.ssh/id_ed25519_halal` for this repository; never commit SSH keys or tokens.
 
 Vercel account verified during setup: `lastav5-1548`, team `stavdigital`. The production domain is not attached to this demo. Repository creation and the GitHub App's repository authorization are separate from SSH authentication.
+
+The demo is deployed to the `ninja-star-demo` project. Automatic GitHub deployments require Vercel GitHub authorization for `halalashdod-cell/NinjaStar`; the initial deployment was completed through the CLI.
