@@ -215,7 +215,8 @@ try {
   const payload = applicationRequest.postDataJSON();
   assert.match(payload.submissionId, /^[0-9a-f-]{36}$/);
   assert.equal(decodeURI(payload.sourcePath), "/עבודה-במתחם/");
-  const { submissionId, sourcePath, ...fields } = payload;
+  assert.equal(typeof payload.attribution, "object");
+  const { submissionId, sourcePath, attribution, ...fields } = payload;
   assert.deepEqual(fields, {
     name: "Demo Applicant",
     phone: "0500000000",

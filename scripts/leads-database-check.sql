@@ -9,7 +9,7 @@ declare
 begin
   if has_table_privilege('anon', 'public.leads', 'select')
     or has_table_privilege('authenticated', 'public.leads', 'select')
-    or has_function_privilege('anon', 'public.submit_website_lead(uuid,text,text,text,text,text,text,text)', 'execute') then
+    or has_function_privilege('anon', 'public.submit_website_lead(uuid,text,text,text,text,text,text,text,jsonb)', 'execute') then
     raise exception 'Public lead access is allowed';
   end if;
   if not (select relrowsecurity from pg_class where oid = 'public.leads'::regclass) then

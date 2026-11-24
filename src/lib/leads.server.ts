@@ -1,4 +1,5 @@
 import { createHmac, randomUUID } from "node:crypto";
+import { normalizeAttribution, type LeadAttribution } from "./attribution.ts";
 
 export class LeadError extends Error {
   status: number;
@@ -10,7 +11,7 @@ export class LeadError extends Error {
 
 export type WebsiteLead = {
   id: string; name: string; phone: string; branch: string; type: string;
-  message: string | null; sourcePath: string;
+  message: string | null; sourcePath: string; attribution: LeadAttribution;
 };
 const invalid = () => new LeadError(400, "בדקו שם, מספר טלפון ובחירת סניף ונסו שוב.");
 const unavailable = () => new LeadError(503, "לא הצלחנו לשמור את הפנייה כרגע. נסו שוב או פנו אלינו בטלפון.");
@@ -35,11 +36,13 @@ export function validateLead(value: unknown): WebsiteLead {
   if (body.submissionId !== undefined && (typeof body.submissionId !== "string" || !uuid.test(body.submissionId))) throw invalid();
   const sourcePath = body.sourcePath ?? "/";
   if (typeof sourcePath !== "string" || sourcePath.length > 500 || !sourcePath.startsWith("/") || sourcePath.startsWith("//") || /[?#\u0000-\u001f\u007f]/.test(sourcePath)) throw invalid();
+  let attribution: LeadAttribution;
+  try { attribution = normalizeAttribution(body.attribution); } catch { throw invalid(); }
   return {
     id: typeof body.submissionId === "string" ? body.submissionId : randomUUID(),
     name: body.name.trim(), phone: body.phone.trim().startsWith("+") ? `+${digits}` : digits,
     branch: body.branch, type: body.type,
-    message: typeof body.message === "string" ? body.message.trim() || null : null, sourcePath,
+    message: typeof body.message === "string" ? body.message.trim() || null : null, sourcePath, attribution,
   };
 }
 
@@ -101,6 +104,7 @@ export async function saveLead(
           p_id: lead.id, p_name: lead.name, p_phone: lead.phone,
           p_branch: lead.branch, p_type: lead.type, p_message: lead.message,
           p_source_path: lead.sourcePath, p_client_hash: clientHash,
+          p_attribution: lead.attribution,
         }),
         cache: "no-store", signal: AbortSignal.timeout(10000),
       });

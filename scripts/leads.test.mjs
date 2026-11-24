@@ -17,7 +17,8 @@ test('rejects invalid values, honeypots, malformed IDs and source URLs with quer
   for (const input of [null, [], { ...body, phone: '123' }, { ...body, branch: 'bad' },
     { ...body, type: 'bad' }, { ...body, name: 'x\nname' }, { ...body, website: 'spam' },
     { ...body, submissionId: 'bad' }, { ...body, message: 'x'.repeat(1001) },
-    { ...body, message: {} }, { ...body, sourcePath: '//other.example/' }, { ...body, sourcePath: '/?private=1' }]) {
+    { ...body, message: {} }, { ...body, sourcePath: '//other.example/' }, { ...body, sourcePath: '/?private=1' },
+    { ...body, attribution: { utm_source: 123 } }, { ...body, attribution: { gclid: 'x'.repeat(513) } }]) {
     assert.throws(() => validateLead(input), isStatus(400));
   }
 });
@@ -32,7 +33,7 @@ test('accepts JSON while rejecting oversized, malformed and cross-origin request
   await assert.rejects(readLeadRequest(request('{}', { 'content-type': 'text/plain' })), isStatus(415));
 });
 test('sends credentials only as apikey and a keyed IP hash, then requires a saved ID', async () => {
-  const lead = validateLead(body);
+  const lead = validateLead({ ...body, attribution: { utm_source: 'google', gclid: 'test-click' } });
   let payload;
   const id = await saveLead(lead, '203.0.113.42', { env, fetcher: async (url, options) => {
     assert.equal(url.pathname, '/rest/v1/rpc/submit_website_lead');
@@ -46,6 +47,8 @@ test('sends credentials only as apikey and a keyed IP hash, then requires a save
   assert.equal(id, lead.id);
   assert.equal(payload.p_id, lead.id);
   assert.equal(payload.p_type, 'birthday');
+  assert.equal(payload.p_attribution.utm_source, 'google');
+  assert.equal(payload.p_attribution.gclid, 'test-click');
 });
 test('never reports success when credentials, database acknowledgements or networking fail', async () => {
   const lead = validateLead(body);

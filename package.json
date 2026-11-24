@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "test:leads": "node --test scripts/leads.test.mjs",
+    "test:leads": "node --test scripts/leads.test.mjs scripts/attribution.test.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:browser": "node scripts/browser-check.mjs",
     "verify:lead-form": "node scripts/leads-form-check.mjs",

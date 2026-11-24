@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState, type FormEvent } from "react";
 import { branches } from "@/lib/content";
+import { getBrowserAttribution, type LeadAttribution } from "@/lib/attribution";
 import { Icon } from "./icon";
 
 export function LeadForm({
@@ -20,6 +21,7 @@ export function LeadForm({
   >("idle");
   const [message, setMessage] = useState("");
   const submissionId = useRef<string | null>(null);
+  const attribution = useRef<LeadAttribution | null>(null);
   const submitting = useRef(false);
   const pending = status === "pending";
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -27,10 +29,12 @@ export function LeadForm({
     if (submitting.current) return;
     const form = event.currentTarget;
     submissionId.current ??= crypto.randomUUID();
+    attribution.current ??= getBrowserAttribution();
     const data = {
       ...Object.fromEntries(new FormData(form)),
       submissionId: submissionId.current,
       sourcePath: window.location.pathname,
+      attribution: attribution.current,
     };
     submitting.current = true;
     setStatus("pending");
@@ -50,6 +54,7 @@ export function LeadForm({
       setMessage(result.message);
       form.reset();
       submissionId.current = null;
+      attribution.current = null;
     } catch (error) {
       setStatus("error");
       setMessage(
