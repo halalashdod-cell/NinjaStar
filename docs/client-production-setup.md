@@ -39,6 +39,7 @@ In https://vercel.com/halal12/ninja-star/settings/environment-variables, configu
 | --- | --- |
 | `SUPABASE_URL` | Already configured with the project URL above. |
 | `SUPABASE_SECRET_KEY` | Present for Production as a sensitive variable, updated after the Frankfurt project was created. Its value stays in Vercel; verify it through a real application submission after deployment. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Optional integration-managed server credential; used if the configured secret key is rejected with HTTP 401. Legacy JWT authorization is supported. |
 
 Create or copy the secret key from the Supabase project's API Keys settings. Store its value directly in Vercel, mark it sensitive, and do not add a `NEXT_PUBLIC_` prefix. The local management-token file should not be copied into the application's Vercel environment.
 

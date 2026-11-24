@@ -53,6 +53,8 @@ All pages emit `noindex, nofollow` metadata and an `X-Robots-Tag` header. Keep t
 
 Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in Vercel Production; `.env.example` documents their names. Apply `supabase/migrations/202611240001_website_leads.sql` before deployment. `scripts/leads-database-check.sql` verifies permissions, retry deduplication, conflicting IDs and rate limiting inside a transaction that rolls back all test records. Leads are visible in the client's Supabase Table Editor. CRM delivery and email notifications are not configured; those require the receiver URL, credentials and field mapping. See `docs/client-production-setup.md` for the client-owned infrastructure.
 
+The server also supports the integration-managed `SUPABASE_SERVICE_ROLE_KEY` as a fallback after a secret-key authentication rejection. Legacy JWT keys are sent on both `apikey` and `Authorization`; modern `sb_secret_...` keys are sent only on `apikey`. Both paths are server-only and target the configured Supabase project.
+
 ## Production launch work
 
 1. Confirm branch details, hours, prices, facilities and birthday-package terms with the owner.

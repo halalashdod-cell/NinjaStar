@@ -66,3 +66,21 @@ test('maps rate limits and changed retry payloads to actionable response codes',
     await assert.rejects(saveLead(lead, 'test', { env, fetcher: async () => Response.json({ code: 'P0001', message }, { status: 400 }) }), isStatus(status));
   }
 });
+test('supports an integration-managed legacy server key after a secret-key authentication rejection', async () => {
+  const lead = validateLead(body);
+  const managedKey = 'eyJ-test-legacy-server-key';
+  let calls = 0;
+  const id = await saveLead(lead, 'test', {
+    env: { ...env, SUPABASE_SERVICE_ROLE_KEY: managedKey },
+    fetcher: async (url, options) => {
+      calls++;
+      if (calls === 1) return Response.json({ message: 'Invalid API key' }, { status: 401 });
+      assert.equal(options.headers.apikey, managedKey);
+      assert.equal(options.headers.Authorization, `Bearer ${managedKey}`);
+      assert.equal(JSON.parse(options.body).p_id, lead.id);
+      return Response.json(lead.id);
+    },
+  });
+  assert.equal(id, lead.id);
+  assert.equal(calls, 2);
+});

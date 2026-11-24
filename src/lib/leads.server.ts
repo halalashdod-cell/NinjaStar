@@ -69,12 +69,16 @@ export async function readLeadRequest(request: Request): Promise<unknown> {
   } finally { reader.releaseLock(); }
 }
 
-export async function saveLead(lead: WebsiteLead, clientAddress: string,
-  options: { env?: Record<string, string | undefined>; fetcher?: typeof fetch } = {}) {
+export async function saveLead(
+  lead: WebsiteLead,
+  clientAddress: string,
+  options: { env?: Record<string, string | undefined>; fetcher?: typeof fetch } = {},
+) {
   const env = options.env ?? process.env;
-  const key = env.SUPABASE_SECRET_KEY;
-  const base = env.SUPABASE_URL;
-  if (!key || !base) {
+  const keys = [...new Set([env.SUPABASE_SECRET_KEY, env.SUPABASE_SERVICE_ROLE_KEY]
+    .map((key) => key?.trim()).filter((key): key is string => !!key))];
+  const base = env.SUPABASE_URL?.trim();
+  if (!keys.length || !base) {
     console.error("Lead storage unavailable", { reason: "missing_server_configuration" });
     throw unavailable();
   }
@@ -83,31 +87,47 @@ export async function saveLead(lead: WebsiteLead, clientAddress: string,
     endpoint = new URL("/rest/v1/rpc/submit_website_lead", base);
     if (endpoint.protocol !== "https:") throw new Error("Invalid database URL");
   } catch { throw unavailable(); }
-  // Store a keyed hash for rate limiting, never the visitor's raw IP address.
-  const clientHash = createHmac("sha256", key).update(clientAddress || "unknown").digest("hex");
+
   try {
-    const response = await (options.fetcher ?? fetch)(endpoint, {
-      method: "POST", headers: { apikey: key, "Content-Type": "application/json" },
-      body: JSON.stringify({ p_id: lead.id, p_name: lead.name, p_phone: lead.phone,
-        p_branch: lead.branch, p_type: lead.type, p_message: lead.message,
-        p_source_path: lead.sourcePath, p_client_hash: clientHash }),
-      cache: "no-store", signal: AbortSignal.timeout(10000),
-    });
-    const result = await response.json().catch(() => null);
-    if (!response.ok) {
-      if (result?.code === "P0001" && result.message === "lead_rate_limit") throw new LeadError(429, "התקבלו פניות רבות בזמן קצר. נסו שוב בעוד כמה דקות או פנו אלינו בטלפון.");
-      if (result?.code === "P0001" && result.message === "lead_id_conflict") throw new LeadError(409, "הפרטים השתנו. רעננו את העמוד ונסו שוב.");
-      console.error("Lead storage request failed", {
-        status: response.status,
-        code: typeof result?.code === "string" && /^[a-z0-9_]{1,40}$/i.test(result.code) ? result.code : "unknown",
+    for (const [index, key] of keys.entries()) {
+      // Legacy service-role keys are JWTs; new secret keys belong only on apikey.
+      const headers: Record<string, string> = { apikey: key, "Content-Type": "application/json" };
+      if (key.startsWith("eyJ")) headers.Authorization = `Bearer ${key}`;
+      // Store a keyed hash for rate limiting, never the visitor's raw IP address.
+      const clientHash = createHmac("sha256", key).update(clientAddress || "unknown").digest("hex");
+      const response = await (options.fetcher ?? fetch)(endpoint, {
+        method: "POST", headers,
+        body: JSON.stringify({
+          p_id: lead.id, p_name: lead.name, p_phone: lead.phone,
+          p_branch: lead.branch, p_type: lead.type, p_message: lead.message,
+          p_source_path: lead.sourcePath, p_client_hash: clientHash,
+        }),
+        cache: "no-store", signal: AbortSignal.timeout(10000),
       });
-      throw unavailable();
+      const result = await response.json().catch(() => null);
+      // An authentication rejection cannot have saved the request. Try the
+      // integration-managed server key, when present, against the same project.
+      if (response.status === 401 && index + 1 < keys.length) continue;
+      if (!response.ok) {
+        if (result?.code === "P0001" && result.message === "lead_rate_limit") {
+          throw new LeadError(429, "התקבלו פניות רבות בזמן קצר. נסו שוב בעוד כמה דקות או פנו אלינו בטלפון.");
+        }
+        if (result?.code === "P0001" && result.message === "lead_id_conflict") {
+          throw new LeadError(409, "הפרטים השתנו. רעננו את העמוד ונסו שוב.");
+        }
+        console.error("Lead storage request failed", {
+          status: response.status,
+          code: typeof result?.code === "string" && /^[a-z0-9_]{1,40}$/i.test(result.code) ? result.code : "unknown",
+        });
+        throw unavailable();
+      }
+      if (result !== lead.id) {
+        console.error("Lead storage unavailable", { reason: "invalid_database_acknowledgement" });
+        throw unavailable();
+      }
+      return lead.id;
     }
-    if (result !== lead.id) {
-      console.error("Lead storage unavailable", { reason: "invalid_database_acknowledgement" });
-      throw unavailable();
-    }
-    return lead.id;
+    throw unavailable();
   } catch (error) {
     if (error instanceof LeadError) throw error;
     console.error("Lead storage unavailable", { reason: "network_or_timeout" });
