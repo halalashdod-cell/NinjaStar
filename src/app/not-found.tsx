@@ -6,7 +6,7 @@ export default function NotFound() {
       <NinjaStar />
       <p className="eyebrow">404</p>
       <h1>העמוד הזה קפץ למקום אחר.</h1>
-      <p>בואו נחזור למסלול ונמצא את החוויה הבאה שלכם.</p>
+      <p>העמוד שחיפשתם לא נמצא. אפשר לחזור לעמוד הבית.</p>
       <Link className="button button-blue" href="/">
         חזרה לעמוד הבית
       </Link>

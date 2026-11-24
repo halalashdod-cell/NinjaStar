@@ -10,17 +10,13 @@ import {
   routeSlugs,
 } from "@/lib/content";
 import { Icon, NinjaStar } from "@/components/icon";
-import {
-  AttractionExplorer,
-  EntryDemo,
-  PricingCards,
-} from "@/components/interactive";
+import { EntryDemo, PricingCards } from "@/components/interactive";
 import { AttractionCard } from "@/components/photo-card";
+import { LeadForm } from "@/components/lead-form";
 import {
   ContactSection,
   FaqSection,
   PageHero,
-  RelatedAttractions,
   SectionHeading,
 } from "@/components/sections";
 
@@ -39,11 +35,6 @@ function normalizedSlug(slug: string) {
 }
 
 const specialPages: Record<string, { title: string; description: string }> = {
-  "המתקנים-שלנו": {
-    title: "המתקנים שלנו",
-    description:
-      "מסלולי נינג׳ה, טרמפולינות, קירות טיפוס, בריכות כדורים ועוד. גלו את המתקנים ובחרו את האתגר הבא שלכם.",
-  },
   "ימי-הולדת": {
     title: "ימי הולדת ואירועים",
     description:
@@ -53,6 +44,11 @@ const specialPages: Record<string, { title: string; description: string }> = {
     title: "מחירון כניסה",
     description:
       "מחירי הכניסה לנינג׳ה סטאר: כניסה לשעתיים, חבילות עם קיר טיפוס וכרטיסיות. בחרו סניף ותכננו את הביקור.",
+  },
+  "עבודה-במתחם": {
+    title: "עבודה במתחם",
+    description:
+      "רוצים להצטרף לצוות נינג׳ה סטאר? בחרו סניף וספרו לנו קצת על עצמכם בטופס המועמדות.",
   },
   enter: {
     title: "אישור השתתפות",
@@ -73,12 +69,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = normalizedSlug((await params).slug);
   const branch = branches.find((b) => b.slug === slug);
-  const attraction = attractions.find((a) => a.slug === slug);
   const details = branch
     ? { title: `נינג׳ה סטאר ${branch.name}`, description: branch.description }
-    : attraction
-      ? { title: attraction.title, description: attraction.description }
-      : specialPages[slug];
+    : specialPages[slug];
   if (!details) return {};
   return {
     ...details,
@@ -88,7 +81,7 @@ export async function generateMetadata({
       description: details.description,
       url: `/${slug}/`,
       images: [
-        { url: branch?.image || attraction?.image || "/images/park.jpg" },
+        { url: branch?.image || "/images/park.jpg" },
       ],
     },
   };
@@ -106,7 +99,7 @@ export default async function ContentPage({
       <>
         <PageHero
           eyebrow={`הסניפים שלנו · ${branch.name}`}
-          title={`הכיף שלכם,\nב${branch.name}.`}
+          title={`נינג׳ה סטאר\n${branch.name}`}
           description={branch.description}
           image={branch.image}
         >
@@ -137,7 +130,7 @@ export default async function ContentPage({
           <div>
             <Icon name="clock" size={24} />
             <div>
-              <strong>מתי קופצים?</strong>
+              <strong>שעות פתיחה</strong>
               <span>
                 א׳–ה׳ <bdi>16:00–20:00</bdi> · ו׳ <bdi>13:00–17:00</bdi>
               </span>
@@ -149,7 +142,7 @@ export default async function ContentPage({
           <div>
             <Icon name="phone" size={24} />
             <div>
-              <strong>אנחנו כאן בשבילכם</strong>
+              <strong>טלפון לבירורים</strong>
               <a href={contact.phoneHref} dir="ltr">
                 {contact.phone}
               </a>
@@ -157,11 +150,8 @@ export default async function ContentPage({
             </div>
           </div>
         </div>
-        <section className="section container">
-          <SectionHeading
-            eyebrow={`נפגשים ב${branch.name}`}
-            title="מה מחכה לכם כאן?"
-          >
+        <section className="section container" id="facilities">
+          <SectionHeading title="המתקנים בסניף">
             <Link href={paths.pricing} className="text-link">
               למחירון הכניסה <Icon name="ticket" size={18} />
             </Link>
@@ -174,96 +164,20 @@ export default async function ContentPage({
               ))}
           </div>
           <p className="fine-print">
-            תמונות מרשת נינג׳ה סטאר. התאמת גיל וזמינות הפעילויות בבירור מול
-            הסניף.
+            תמונות מרשת נינג׳ה סטאר.
           </p>
         </section>
         <section className="container branch-birthday">
           <Icon name="cake" size={42} />
           <div>
-            <h2>יש יום הולדת באופק?</h2>
-            <p>בואו להפוך את היום שלכם לחגיגה מלאה באקשן.</p>
+            <h2>ימי הולדת בסניף</h2>
+            <p>פעילות במתחם, הפעלה עם הצוות וטקס עוגה.</p>
           </div>
           <Link href={paths.birthdays} className="button button-blue">
-            מגלים את החבילות
+            פרטים על ימי הולדת
           </Link>
         </section>
         <ContactSection initialBranch={branch.id} />
-      </>
-    );
-
-  const attraction = attractions.find((a) => a.slug === slug);
-  if (attraction)
-    return (
-      <>
-        <PageHero
-          eyebrow="המתקנים שלנו"
-          title={attraction.title}
-          description={attraction.description}
-          image={attraction.image}
-        >
-          <a href="#where" className="button button-red">
-            <Icon name="pin" size={18} />
-            באיזה סניף נפגשים?
-          </a>
-        </PageHero>
-        <section className="section container attraction-details">
-          <div>
-            <p className="eyebrow">
-              <span />
-              {attraction.tag}
-            </p>
-            <h2>{attraction.label}</h2>
-            <p>{attraction.description}</p>
-            <ul className="check-list">
-              {attraction.details.map((d) => (
-                <li key={d}>
-                  <Icon name="check" size={19} />
-                  {d}
-                </li>
-              ))}
-            </ul>
-            <p className="fine-print">
-              התאמת גיל ותנאי השימוש נקבעים בהתאם למתקן ולהנחיות הסניף.
-            </p>
-          </div>
-          <div className="where-card" id="where">
-            <Icon name="pin" size={28} />
-            <h3>כאן אפשר ליהנות מהמתקן</h3>
-            {branches
-              .filter((b) => b.attractions.includes(attraction.id))
-              .map((b) => (
-                <Link href={`/${b.slug}/`} key={b.id}>
-                  <span>
-                    {b.name}
-                    <small>{b.label}</small>
-                  </span>
-                  <Icon name="plus" size={19} />
-                </Link>
-              ))}
-            <Link className="text-link" href={paths.pricing}>
-              למחירון הכניסה
-            </Link>
-          </div>
-        </section>
-        <RelatedAttractions exclude={attraction.id} />
-        <ContactSection />
-      </>
-    );
-
-  if (slug === "המתקנים-שלנו")
-    return (
-      <>
-        <PageHero
-          eyebrow="המתקנים שלנו"
-          title={"כל אחד\nוהאתגר שלו."}
-          description="קפיצות, טיפוס, מסלולי נינג׳ה ומשחקים. בוחרים את מה שאוהבים, ומגלים עוד משהו בדרך."
-        />
-        <section className="section container">
-          <AttractionExplorer />
-        </section>
-        <FaqSection />
-        <ContactSection />
       </>
     );
 
@@ -272,15 +186,15 @@ export default async function ContentPage({
       <>
         <PageHero
           eyebrow="מחירון כניסה"
-          title={"בוחרים חוויה.\nמתחילים לקפוץ."}
-          description="כל מה שצריך לדעת כדי לתכנן את הביקור הבא שלכם."
+          title="מחירון כניסה"
+          description="כרטיסי כניסה לשעתיים, תוספות וכרטיסיות."
         />
         <section className="section container pricing-section">
           <PricingCards />
           <div className="extras-grid">
             <div>
               <Icon name="ticket" size={29} />
-              <h3>עוד ביקור ועוד חיוך</h3>
+              <h3>כרטיסיות</h3>
               <p>
                 כרטיסייה ל־10 כניסות <strong>₪490</strong>
               </p>
@@ -290,7 +204,7 @@ export default async function ContentPage({
             </div>
             <div>
               <Icon name="zap" size={29} />
-              <h3>מוסיפים סיבוב</h3>
+              <h3>מכוניות מתנגשות</h3>
               <p>
                 מכוניות מתנגשות בסניף אשדוד <strong>₪15</strong>
               </p>
@@ -307,14 +221,14 @@ export default async function ContentPage({
           <div className="entry-link-panel">
             <Icon name="shield" size={26} />
             <div>
-              <h3>רגע לפני הביקור</h3>
+              <h3>אישור השתתפות</h3>
               <p>
                 כדי להשתתף בפעילות יש להשלים אישור השתתפות ולהכיר את תנאי
                 השימוש.
               </p>
             </div>
             <Link href={paths.entry} className="text-link">
-              לאישור ההשתתפות <Icon name="plus" size={18} />
+              לאישור ההשתתפות <Icon name="left" size={18} />
             </Link>
           </div>
         </section>
@@ -328,8 +242,8 @@ export default async function ContentPage({
       <>
         <PageHero
           eyebrow="ימי הולדת ואירועים"
-          title={"היום שלכם.\nהחוויה של כולם."}
-          description="החברים הכי טובים, האתגרים הכי כיפיים, וחגיגה שעוד ידברו עליה. בואו לחגוג יום הולדת בנינג׳ה סטאר."
+          title="ימי הולדת בנינג׳ה סטאר"
+          description="ימי הולדת עם פעילות במתקנים, הפעלה, כיבוד וטקס עוגה. לתיאום בוחרים את אחד משלושת הסניפים."
           image="/images/hero.jpg"
         >
           <a href="#enquiry" className="button button-red">
@@ -339,18 +253,12 @@ export default async function ContentPage({
         </PageHero>
         <section className="section container birthday-intro">
           <div>
-            <p className="eyebrow">
-              <span />
-              חוגגים, משחקים, נהנים
-            </p>
             <h2>
-              את הנרות מכבים.
-              <br />
-              את האנרגיה <span>משחררים.</span>
+              חוגגים עם <span>הצוות</span>
             </h2>
             <p>
-              מסלולי נינג׳ה, טרמפולינות ומשחקים עם כל החברים. הצוות יעזור להתאים
-              את הפעילות לגיל הילדים ולבנות חגיגה בסניף שבחרתם.
+              הצוות שלנו מקבל את החברים בחיוך, מלווה את המשחקים ומנחה את טקס
+              העוגה. בחרו סניף כדי לתאם את פרטי החגיגה.
             </p>
             <div className="birthday-branch-links">
               {branches.map((b) => (
@@ -373,10 +281,7 @@ export default async function ContentPage({
         </section>
         <section className="package-section">
           <div className="container">
-            <SectionHeading
-              eyebrow="החבילה שעושה את החגיגה"
-              title="כל הדברים שילדים אוהבים."
-            />
+            <SectionHeading title="מה כוללת החגיגה?" />
             <div className="package-grid">
               {[
                 {
@@ -387,12 +292,12 @@ export default async function ContentPage({
                 {
                   icon: "users" as const,
                   title: "הפעלה עם הצוות",
-                  text: "פעילות לבחירה בהתאמה לגיל החוגגים.",
+                  text: "משחקים ואתגרים בהנחיית הצוות שלנו.",
                 },
                 {
                   icon: "cake" as const,
                   title: "כיבוד וטקס עוגה",
-                  text: "חטיפים, פיצה, שתייה ורגע של משאלות.",
+                  text: "כיבוד לחברים וטקס עוגה בהנחיית הצוות.",
                 },
                 {
                   icon: "sparkles" as const,
@@ -418,12 +323,26 @@ export default async function ContentPage({
       </>
     );
 
+  if (slug === "עבודה-במתחם")
+    return (
+      <>
+        <PageHero
+          eyebrow="עבודה במתחם"
+          title="עבודה בנינג׳ה סטאר"
+          description="רוצים להצטרף לצוות? השאירו פרטים וציינו באיזה סניף תרצו לעבוד."
+        />
+        <section className="section container narrow recruitment-section">
+          <LeadForm variant="recruitment" />
+        </section>
+      </>
+    );
+
   if (slug === "enter")
     return (
       <>
         <PageHero
           eyebrow="אישור השתתפות"
-          title="לפני שקופצים."
+          title="אישור השתתפות"
           description="מכירים את תנאי ההשתתפות ומגיעים מוכנים לביקור."
         />
         <section className="section container narrow">
@@ -437,7 +356,7 @@ export default async function ContentPage({
       <>
         <PageHero
           eyebrow="נגישות"
-          title="כיף שכולם חלק ממנו."
+          title="נגישות באתר ובסניפים"
           description="מידע על נגישות האתר והסניפים ודרכי יצירת קשר."
         />
         <section className="section container narrow prose">

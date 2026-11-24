@@ -1,27 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
-import { branches, attractions, contact, faqs, paths } from "@/lib/content";
-import { Icon, NinjaStar } from "./icon";
+import { branches, contact, faqs, paths } from "@/lib/content";
+import { Icon, NinjaStar, WhatsAppIcon } from "./icon";
 import { LeadForm } from "./lead-form";
-import { AttractionCard } from "./photo-card";
 import { BrandMark } from "./brand-mark";
+import { FaqItem } from "./faq-item";
 
 export function SectionHeading({
   eyebrow,
   title,
   children,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   children?: React.ReactNode;
 }) {
   return (
-    <div className="section-heading">
+    <div className="section-heading" data-reveal>
       <div>
-        <p className="eyebrow">
-          <span />
-          {eyebrow}
-        </p>
+        {eyebrow && (
+          <p className="eyebrow">
+            <span />
+            {eyebrow}
+          </p>
+        )}
         <h2>{title}</h2>
       </div>
       {children}
@@ -29,36 +31,13 @@ export function SectionHeading({
   );
 }
 
-export function BranchPicker() {
-  return (
-    <div className="branch-picker container">
-      <div className="branch-picker-title">
-        <Icon name="pin" size={28} />
-        <div>
-          <strong>איפה נפגשים?</strong>
-          <span>שלושה סניפים. אינסוף חוויות.</span>
-        </div>
-      </div>
-      {branches.map((b) => (
-        <Link href={`/${b.slug}/`} key={b.id}>
-          <div>
-            <strong>{b.name}</strong>
-            <span>{b.label}</span>
-          </div>
-          <Icon name="plus" size={22} />
-        </Link>
-      ))}
-    </div>
-  );
-}
-
 export function BirthdayBanner() {
   return (
-    <section className="birthday-banner container">
+    <section className="birthday-banner container" data-reveal>
       <div className="birthday-copy">
         <p className="eyebrow light">
           <Icon name="cake" size={18} />
-          כאן חוגגים קצת אחרת
+          ימי הולדת ואירועים
         </p>
         <h2>
           יום הולדת
@@ -66,9 +45,7 @@ export function BirthdayBanner() {
           שמגיע <span>לשיאים.</span>
         </h2>
         <p>
-          החברים, האתגרים והרגע הזה שכולם זוכרים.
-          <br />
-          אתם מביאים את העוגה, אנחנו מביאים את האקשן.
+          פעילות במתקנים, הפעלה עם הצוות וטקס עוגה עם החברים.
         </p>
         <Link href={paths.birthdays} className="button button-white">
           בואו נתכנן את החגיגה
@@ -99,19 +76,10 @@ export function BirthdayBanner() {
 export function BranchesSection() {
   return (
     <section className="section container" id="branches">
-      <SectionHeading
-        eyebrow="קרובים אליכם, רחוקים מהשגרה"
-        title="הסניף שלכם. הכיף של כולם."
-      >
-        <p>
-          בחרו את המקום שבו
-          <br />
-          מתחילה ההרפתקה הבאה.
-        </p>
-      </SectionHeading>
+      <SectionHeading title="הסניפים שלנו" />
       <div className="branches-grid">
         {branches.map((b) => (
-          <article className="branch-card" key={b.id}>
+          <article className="branch-card" key={b.id} data-reveal>
             <Link href={`/${b.slug}/`} className="branch-image">
               <Image
                 src={b.image}
@@ -131,7 +99,7 @@ export function BranchesSection() {
               <p>{b.address}</p>
               <div className="branch-card-actions">
                 <Link href={`/${b.slug}/`} className="text-link">
-                  מגלים את הסניף <Icon name="plus" size={16} />
+                  מגלים את הסניף <Icon name="left" size={16} />
                 </Link>
                 <a
                   href={b.waze}
@@ -156,20 +124,16 @@ export function BranchesSection() {
 export function FaqSection() {
   return (
     <section className="faq-section section container">
-      <div className="faq-heading">
+      <div className="faq-heading" data-reveal>
         <p className="eyebrow">
           <span />
           רגע לפני שקופצים
         </p>
         <h2>
-          שאלתם?
-          <br />
-          <span>אז הנה התשובות.</span>
+          שאלות <span>נפוצות</span>
         </h2>
         <p>
-          עדיין מתלבטים? אנחנו כאן
-          <br />
-          כדי לעזור לכם לתכנן את הביקור.
+          לשאלות נוספות אפשר לפנות לצוות.
         </p>
         <a className="text-link" href={contact.phoneHref}>
           <Icon name="phone" size={18} />
@@ -178,13 +142,7 @@ export function FaqSection() {
       </div>
       <div className="faq-list">
         {faqs.map((f) => (
-          <details key={f.question}>
-            <summary>
-              {f.question}
-              <Icon name="plus" size={20} />
-            </summary>
-            <p>{f.answer}</p>
-          </details>
+          <FaqItem key={f.question} question={f.question} answer={f.answer} />
         ))}
       </div>
     </section>
@@ -204,20 +162,12 @@ export function ContactSection({
         className="container contact-layout"
         id={birthday ? "enquiry" : undefined}
       >
-        <div className="contact-copy">
-          <p className="eyebrow">
-            <span />
-            הכיף שלכם מתחיל כאן
-          </p>
+        <div className="contact-copy" data-reveal>
           <h2>
-            יאללה,
-            <br />
-            <span>נפגשים?</span>
+            צרו <span>קשר</span>
           </h2>
           <p>
-            לביקור משפחתי, ליום הולדת
-            <br />
-            או ליום כיף שכולם צריכים.
+            לבירור פרטים על ביקור או לתיאום חגיגה, הצוות שלנו כאן לעזור.
           </p>
           <a className="contact-phone" href={contact.phoneHref}>
             <Icon name="phone" size={24} />
@@ -226,29 +176,21 @@ export function ContactSection({
           <a className="contact-mail" href={`mailto:${contact.email}`}>
             {contact.email}
           </a>
+          <a
+            className="contact-whatsapp"
+            href={contact.whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <WhatsAppIcon />
+            כתבו לנו בוואטסאפ
+          </a>
           <NinjaStar className="contact-star" />
         </div>
-        <LeadForm initialBranch={initialBranch} birthday={birthday} />
-      </div>
-    </section>
-  );
-}
-
-export function RelatedAttractions({ exclude }: { exclude?: string }) {
-  return (
-    <section className="section container">
-      <SectionHeading eyebrow="לא עוצרים כאן" title="עוד סיבות לחייך">
-        <Link href={paths.attractions} className="text-link">
-          לכל המתקנים <Icon name="plus" size={17} />
-        </Link>
-      </SectionHeading>
-      <div className="attraction-grid">
-        {attractions
-          .filter((a) => a.id !== exclude)
-          .slice(0, 3)
-          .map((a) => (
-            <AttractionCard key={a.id} attraction={a} />
-          ))}
+        <LeadForm
+          initialBranch={initialBranch}
+          variant={birthday ? "birthday" : "visit"}
+        />
       </div>
     </section>
   );
@@ -267,11 +209,7 @@ export function Footer() {
             >
               <BrandMark />
             </Link>
-            <p>
-              יותר תנועה. יותר ביחד.
-              <br />
-              הרבה יותר מיום כיף.
-            </p>
+            <p>נינג׳ה, טרמפולינות וימי הולדת.</p>
           </div>
           <div>
             <h3>מגלים את נינג׳ה סטאר</h3>
@@ -279,6 +217,7 @@ export function Footer() {
             <Link href={paths.birthdays}>ימי הולדת ואירועים</Link>
             <Link href={paths.pricing}>מחירון כניסה</Link>
             <Link href="/#contact">צרו קשר</Link>
+            <Link href={paths.recruitment}>עבודה במתחם</Link>
           </div>
           <div>
             <h3>הסניפים שלנו</h3>
@@ -307,12 +246,18 @@ export function Footer() {
           </span>
           <div>
             <Link href={paths.accessibility}>נגישות</Link>
-            <span>גרסת הדגמה · ללא איסוף פניות</span>
           </div>
         </div>
       </footer>
-      <a className="floating-contact" href="/#contact" aria-label="ליצירת קשר">
-        <Icon name="chat" size={25} />
+      <a
+        className="floating-contact"
+        href={contact.whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="פתיחת שיחה בוואטסאפ"
+      >
+        <WhatsAppIcon size={25} />
+        <span>דברו איתנו</span>
       </a>
     </>
   );
@@ -351,10 +296,6 @@ export function PageHero({
           <span>/</span>
           <span>{eyebrow}</span>
         </nav>
-        <p className="eyebrow light">
-          <span />
-          {eyebrow}
-        </p>
         <h1>{title}</h1>
         <p className="page-hero-description">{description}</p>
         {children}

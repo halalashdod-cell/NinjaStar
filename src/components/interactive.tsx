@@ -1,53 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { attractions, branches, prices, paths } from "@/lib/content";
-import { AttractionCard } from "./photo-card";
+import { useState, type CSSProperties } from "react";
+import { branches, prices, paths } from "@/lib/content";
 import { Icon } from "./icon";
 import Link from "next/link";
-
-export function AttractionExplorer() {
-  const [branch, setBranch] = useState("all");
-  const visible =
-    branch === "all"
-      ? attractions
-      : attractions.filter((a) =>
-          branches.find((b) => b.id === branch)?.attractions.includes(a.id),
-        );
-  return (
-    <>
-      <div
-        className="filter-tabs"
-        role="group"
-        aria-label="סינון מתקנים לפי סניף"
-      >
-        <button
-          aria-pressed={branch === "all"}
-          onClick={() => setBranch("all")}
-        >
-          כל המתקנים
-        </button>
-        {branches.map((b) => (
-          <button
-            key={b.id}
-            aria-pressed={branch === b.id}
-            onClick={() => setBranch(b.id)}
-          >
-            {b.name}
-          </button>
-        ))}
-      </div>
-      <div className="attraction-grid explorer-grid" aria-live="polite">
-        {visible.map((a) => (
-          <AttractionCard key={a.id} attraction={a} />
-        ))}
-      </div>
-      <p className="fine-print centered">
-        זמינות המתקנים והתאמת הגיל נבדקות מול הסניף לפני ההגעה.
-      </p>
-    </>
-  );
-}
 
 export function PricingCards() {
   const [branch, setBranch] = useState("rehovot");
@@ -56,7 +12,8 @@ export function PricingCards() {
       <div className="pricing-filter">
         <span>בוחרים סניף:</span>
         <div
-          className="filter-tabs"
+          className="filter-tabs pricing-tabs"
+          style={{ "--tab-index": branches.findIndex((b) => b.id === branch) } as CSSProperties}
           role="group"
           aria-label="בחירת סניף למחירון"
         >
@@ -81,9 +38,6 @@ export function PricingCards() {
             key={price.title}
             className={`price-card ${price.popular ? "featured" : ""}`}
           >
-            {price.popular && (
-              <span className="price-tag">קופצים על כל רגע</span>
-            )}
             <Icon
               name={
                 price.value === 50

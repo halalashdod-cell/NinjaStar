@@ -1,52 +1,27 @@
 import { NextResponse } from "next/server";
+import { LeadError, readLeadRequest, saveLead, validateLead } from "@/lib/leads.server";
+
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  if (!request.headers.get("content-type")?.includes("application/json"))
-    return NextResponse.json(
-      { message: "פורמט הבקשה אינו נתמך." },
-      { status: 415 },
-    );
-  const raw = await request.text();
-  if (raw.length > 4096)
-    return NextResponse.json({ message: "הבקשה ארוכה מדי." }, { status: 413 });
-  let body: Record<string, unknown>;
   try {
-    body = JSON.parse(raw);
-  } catch {
-    return NextResponse.json(
-      { message: "לא הצלחנו לקרוא את הפרטים." },
-      { status: 400 },
-    );
+    const lead = validateLead(await readLeadRequest(request));
+    const address = (request.headers.get("x-vercel-forwarded-for")
+      || request.headers.get("x-forwarded-for") || "unknown").split(",")[0].trim();
+    const id = await saveLead(lead, address);
+    return NextResponse.json({
+      success: true, persisted: true, id,
+      message: lead.type === "recruitment"
+        ? "המועמדות נקלטה בהצלחה. תודה שפניתם אלינו!"
+        : "הפרטים נקלטו בהצלחה. תודה שפניתם אלינו!",
+    }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    // Never send database errors, credentials, or submitted personal data to logs/UI.
+    const status = error instanceof LeadError ? error.status : 503;
+    const message = error instanceof LeadError ? error.message : "לא הצלחנו לשמור את הפנייה כרגע. נסו שוב מאוחר יותר.";
+    return NextResponse.json({ success: false, persisted: false, message }, {
+      status,
+      headers: { "Cache-Control": "no-store", ...(status === 429 ? { "Retry-After": "600" } : {}) },
+    });
   }
-  if (!body || typeof body !== "object" || Array.isArray(body))
-    return NextResponse.json({ message: "פרטים לא תקינים." }, { status: 400 });
-  if (body.website)
-    return NextResponse.json({ message: "פרטים לא תקינים." }, { status: 400 });
-  if (
-    typeof body.name !== "string" ||
-    body.name.trim().length < 2 ||
-    body.name.length > 80 ||
-    typeof body.phone !== "string" ||
-    !/^[+\d ()-]{9,20}$/.test(body.phone) ||
-    body.phone.replace(/\D/g, "").length < 9 ||
-    typeof body.branch !== "string" ||
-    !["rehovot", "ashdod", "hod-hasharon"].includes(body.branch) ||
-    typeof body.type !== "string" ||
-    !["visit", "birthday", "group", "other"].includes(body.type)
-  ) {
-    return NextResponse.json(
-      { message: "בדקו שם, מספר טלפון ובחירת סניף ונסו שוב." },
-      { status: 400 },
-    );
-  }
-  // Demo boundary: intentionally no database, email, logging of personal data, or external submission.
-  return NextResponse.json(
-    {
-      demo: true,
-      persisted: false,
-      message:
-        "ההדגמה הושלמה בהצלחה! הפרטים לא נשמרו ולא נשלחו לסניף. לתיאום ביקור אמיתי חייגו 08-8565537.",
-    },
-    { headers: { "Cache-Control": "no-store" } },
-  );
 }

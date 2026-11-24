@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { attractions, paths } from "@/lib/content";
 import { Icon } from "@/components/icon";
 import { AttractionCard } from "@/components/photo-card";
+import { ReviewsCarousel } from "@/components/reviews-carousel";
+import { HeroVideo } from "@/components/hero-video";
 import {
-  BranchPicker,
   SectionHeading,
   BirthdayBanner,
   BranchesSection,
@@ -17,16 +17,9 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   return (
-    <>
+    <div className="home-page">
       <section className="hero">
-        <Image
-          className="hero-image"
-          src="/images/stitch-arena.jpg"
-          alt="הדמיית אווירה של זירת נינג׳ה בתאורת כחול ואדום"
-          fill
-          priority
-          sizes="100vw"
-        />
+        <HeroVideo />
         <div className="hero-shade" />
         <div className="container hero-inner">
           <div className="hero-copy">
@@ -41,8 +34,8 @@ export default function Home() {
               </p>
             </div>
             <p className="hero-description">
-              קופצים, מטפסים וחוגגים יחד. עולם של מתקנים ואתגרים, משחקים וימי
-              הולדת בסניפי רחובות, אשדוד והוד השרון — חוויות שכולם זוכרים.
+              מתחמי נינג׳ה, טרמפולינות וטיפוס ברחובות, אשדוד והוד השרון.
+              לבילוי משפחתי, ימי הולדת ואירועים קבוצתיים.
             </p>
             <div className="hero-actions">
               <Link
@@ -58,16 +51,11 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <span className="hero-photo-credit">תמונת אווירה</span>
       </section>
-      <BranchPicker />
-      <section className="section container attractions-home">
-        <SectionHeading
-          eyebrow="מתחם אחד. עולם של אפשרויות."
-          title="כל אחד והאתגר שלו."
-        >
-          <Link href={paths.attractions} className="text-link">
-            מגלים את כל המתקנים <Icon name="plus" size={18} />
+      <section className="section container attractions-home" id="facilities">
+        <SectionHeading title="המתקנים שלנו">
+          <Link href="#branches" className="text-link">
+            לסניפים שלנו <Icon name="left" size={18} />
           </Link>
         </SectionHeading>
         <div className="attraction-grid home-attractions">
@@ -75,54 +63,27 @@ export default function Home() {
             <AttractionCard key={a.id} attraction={a} />
           ))}
         </div>
-        <div className="attraction-footer">
-          <span>
-            <Icon name="zap" size={18} />
-            מגיעים עם אנרגיה. יוצאים עם חוויות.
-          </span>
-          <p>מגוון המתקנים משתנה בין הסניפים.</p>
-        </div>
       </section>
       <section className="why-section">
-        <div className="container why-layout">
+        <div className="container why-layout" data-reveal>
           <div>
-            <p className="eyebrow">
-              <span />
-              זה הזמן שלכם ביחד
-            </p>
-            <h2>
-              הילדים מוציאים אנרגיה.
-              <br />
-              אתם אוספים <span>רגעים.</span>
-            </h2>
+            <h2>הצוות שלנו</h2>
           </div>
           <div className="why-features">
             <div>
               <Icon name="users" size={28} />
-              <h3>כיף לכל המשפחה</h3>
-              <p>
-                מקום לפעילות משותפת,
-                <br />
-                מהקטנטנים ועד ההורים.
-              </p>
+              <h3>מקבלים אתכם בחיוך</h3>
+              <p>עוזרים להכיר את המתחם ולבחור פעילות.</p>
             </div>
             <div>
-              <Icon name="mountain" size={28} />
-              <h3>אתגר בכל פינה</h3>
-              <p>
-                קופצים, מטפסים ומגלים
-                <br />
-                משהו חדש בכל ביקור.
-              </p>
+              <Icon name="shield" size={28} />
+              <h3>מלווים את הפעילות</h3>
+              <p>מסבירים על המתקנים ועל כללי השימוש במקום.</p>
             </div>
             <div>
               <Icon name="cake" size={28} />
-              <h3>חוגגים בגדול</h3>
-              <p>
-                ימי הולדת, אירועים
-                <br />
-                וימי כיף עם החברים.
-              </p>
+              <h3>מפעילים את החגיגה</h3>
+              <p>משחקים משותפים וטקס עוגה עם הצוות.</p>
             </div>
           </div>
         </div>
@@ -131,8 +92,9 @@ export default function Home() {
         <BirthdayBanner />
       </div>
       <BranchesSection />
+      <ReviewsCarousel />
       <FaqSection />
       <ContactSection />
-    </>
+    </div>
   );
 }

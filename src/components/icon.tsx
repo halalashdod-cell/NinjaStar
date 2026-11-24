@@ -5,6 +5,7 @@ import {
   X,
   ChevronDown,
   ChevronLeft,
+  ChevronRight,
   Check,
   Clock3,
   Navigation,
@@ -12,12 +13,15 @@ import {
   Sparkles,
   ShieldCheck,
   MessageCircle,
-  Plus,
+  Quote,
   Users,
   Zap,
   Mountain,
   Ticket,
   Mail,
+  Play,
+  Pause,
+  LoaderCircle,
 } from "lucide-react";
 
 const icons = {
@@ -27,6 +31,7 @@ const icons = {
   close: X,
   down: ChevronDown,
   left: ChevronLeft,
+  right: ChevronRight,
   check: Check,
   clock: Clock3,
   navigation: Navigation,
@@ -34,12 +39,15 @@ const icons = {
   sparkles: Sparkles,
   shield: ShieldCheck,
   chat: MessageCircle,
-  plus: Plus,
+  quote: Quote,
   users: Users,
   zap: Zap,
   mountain: Mountain,
   ticket: Ticket,
   mail: Mail,
+  play: Play,
+  pause: Pause,
+  loading: LoaderCircle,
 };
 export function Icon({
   name,
@@ -58,6 +66,25 @@ export function Icon({
       className={className}
       aria-hidden="true"
     />
+  );
+}
+
+export function WhatsAppIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.5 11.6a8.5 8.5 0 0 1-12.7 7.5L3 20.5l1.4-4.6a8.5 8.5 0 1 1 16.1-4.3Z" />
+      <path d="m8.5 7.6 1.4 2.2-1.1 1.1a8.4 8.4 0 0 0 4.2 4.2l1.1-1.1 2.2 1.4c-.2 1.2-1 1.8-2.2 1.6-3.9-.7-6.6-3.4-7.3-7.3-.2-1.2.4-2 1.7-2.1Z" />
+    </svg>
   );
 }
 

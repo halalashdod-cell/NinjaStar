@@ -1,0 +1,30 @@
+{
+  "prepared": "2026-11-24",
+  "source": {
+    "name": "ninjastar-hero.mp4",
+    "bytes": 100961183,
+    "duration": 40.4,
+    "width": 1920,
+    "height": 1080,
+    "frameRate": "30/1"
+  },
+  "note": "User-provided venue footage; original edit retained. Silent H.264 MP4s with fast-start metadata. Mobile uses a centred portrait crop. Original stays outside the repository.",
+  "outputs": [
+    {
+      "name": "desktop",
+      "video": "public/videos/ninja-star-hero-desktop.mp4",
+      "bytes": 8236633,
+      "poster": "public/images/ninja-star-hero-desktop.webp",
+      "posterBytes": 51466,
+      "filter": "scale=1280:720:force_original_aspect_ratio=decrease,setsar=1,fps=30"
+    },
+    {
+      "name": "mobile",
+      "video": "public/videos/ninja-star-hero-mobile.mp4",
+      "bytes": 4380303,
+      "poster": "public/images/ninja-star-hero-mobile.webp",
+      "posterBytes": 23280,
+      "filter": "crop=trunc(ih*9/16/2)*2:ih:(iw-ow)/2:0,scale=540:960,setsar=1,fps=30"
+    }
+  ]
+}

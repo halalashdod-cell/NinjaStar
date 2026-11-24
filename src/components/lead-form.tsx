@@ -1,25 +1,38 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { branches } from "@/lib/content";
 import { Icon } from "./icon";
 
 export function LeadForm({
   initialBranch = "",
-  birthday = false,
+  variant = "visit",
 }: {
   initialBranch?: string;
-  birthday?: boolean;
+  variant?: "visit" | "birthday" | "recruitment";
 }) {
   const id = useId();
+  const recruitment = variant === "recruitment";
+  const birthday = variant === "birthday";
+  const Heading = recruitment ? "h2" : "h3";
   const [status, setStatus] = useState<
     "idle" | "pending" | "success" | "error"
   >("idle");
   const [message, setMessage] = useState("");
+  const submissionId = useRef<string | null>(null);
+  const submitting = useRef(false);
+  const pending = status === "pending";
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting.current) return;
     const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form));
+    submissionId.current ??= crypto.randomUUID();
+    const data = {
+      ...Object.fromEntries(new FormData(form)),
+      submissionId: submissionId.current,
+      sourcePath: window.location.pathname,
+    };
+    submitting.current = true;
     setStatus("pending");
     setMessage("");
     try {
@@ -29,46 +42,60 @@ export function LeadForm({
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      if (!response.ok)
+      if (!response.ok || result.persisted !== true)
         throw new Error(
-          result.message || "לא הצלחנו להשלים את ההדגמה. נסו שוב.",
+          result.message || "לא הצלחנו לשמור את הפנייה. נסו שוב.",
         );
       setStatus("success");
       setMessage(result.message);
       form.reset();
+      submissionId.current = null;
     } catch (error) {
       setStatus("error");
       setMessage(
-        error instanceof Error ? error.message : "אירעה שגיאה. נסו שוב.",
+        error instanceof Error && !(error instanceof TypeError) && !(error instanceof SyntaxError)
+          ? error.message
+          : "לא הצלחנו לשלוח את הפנייה. הפרטים נשארו בטופס, ואפשר לנסות שוב.",
       );
+    } finally {
+      submitting.current = false;
     }
   }
   return (
     <form
       className="lead-form"
       onSubmit={submit}
-      aria-label="טופס התעניינות להדגמה"
+      onChange={() => { submissionId.current = null; }}
+      aria-busy={pending}
+      aria-label={
+        recruitment ? "טופס מועמדות לעבודה" : "טופס התעניינות"
+      }
     >
       <div className="form-heading">
-        <Icon name="chat" size={26} />
+        <Icon name={recruitment ? "users" : "chat"} size={26} />
         <div>
-          <h3>
-            {birthday ? "מתחילים לתכנן את החגיגה" : "בואו נדבר על הביקור שלכם"}
-          </h3>
-          <p>כמה פרטים קטנים, ואפשר להתחיל לדמיין.</p>
+          <Heading>
+            {recruitment
+              ? "נשמח להכיר אתכם"
+              : birthday
+                ? "תיאום יום הולדת"
+                : "פרטים ליצירת קשר"}
+          </Heading>
+          <p>
+            {recruitment
+              ? "בחרו סניף וספרו לנו קצת על עצמכם."
+              : "בחרו סניף וסוג פנייה."}
+          </p>
         </div>
       </div>
-      <div className="form-demo">
-        <Icon name="sparkles" size={16} />
-        הדגמה בלבד — הפרטים אינם נשמרים או נשלחים לסניף. מומלץ להשתמש בפרטי
-        דוגמה.
-      </div>
+      <p className="form-purpose">הפרטים ישמשו ליצירת קשר בנוגע לפנייה.</p>
       <div className="form-grid">
         <label htmlFor={`${id}-name`}>
           שם מלא
           <input
             id={`${id}-name`}
             name="name"
+            disabled={pending}
             placeholder="איך קוראים לכם?"
             required
             minLength={2}
@@ -81,6 +108,7 @@ export function LeadForm({
           <input
             id={`${id}-phone`}
             name="phone"
+            disabled={pending}
             type="tel"
             inputMode="tel"
             placeholder="050-0000000"
@@ -91,12 +119,16 @@ export function LeadForm({
             dir="ltr"
           />
         </label>
-        <label htmlFor={`${id}-branch`}>
-          באיזה סניף נפגשים?
+        <label
+          htmlFor={`${id}-branch`}
+          className={recruitment ? "form-field-wide" : undefined}
+        >
+          {recruitment ? "באיזה סניף תרצו לעבוד?" : "באיזה סניף נפגשים?"}
           <span className="select-wrap">
             <select
               id={`${id}-branch`}
               name="branch"
+              disabled={pending}
               defaultValue={initialBranch}
               required
             >
@@ -112,22 +144,40 @@ export function LeadForm({
             <Icon name="down" size={16} />
           </span>
         </label>
-        <label htmlFor={`${id}-type`}>
-          מה מתכננים?
-          <span className="select-wrap">
-            <select
-              id={`${id}-type`}
-              name="type"
-              defaultValue={birthday ? "birthday" : "visit"}
-            >
-              <option value="visit">בילוי משפחתי</option>
-              <option value="birthday">יום הולדת</option>
-              <option value="group">אירוע או קבוצה</option>
-              <option value="other">משהו אחר</option>
-            </select>
-            <Icon name="down" size={16} />
-          </span>
-        </label>
+        {recruitment ? (
+          <>
+            <input type="hidden" name="type" value="recruitment" />
+            <label htmlFor={`${id}-message`} className="form-field-wide">
+              כמה מילים עליכם (לא חובה)
+              <textarea
+                id={`${id}-message`}
+                name="message"
+                disabled={pending}
+                placeholder="ניסיון קודם, זמינות או מה מושך אתכם לעבודה אצלנו"
+                maxLength={1000}
+                rows={4}
+              />
+            </label>
+          </>
+        ) : (
+          <label htmlFor={`${id}-type`}>
+            מה מתכננים?
+            <span className="select-wrap">
+              <select
+                id={`${id}-type`}
+                name="type"
+                disabled={pending}
+                defaultValue={birthday ? "birthday" : "visit"}
+              >
+                <option value="visit">בילוי משפחתי</option>
+                <option value="birthday">יום הולדת</option>
+                <option value="group">אירוע או קבוצה</option>
+                <option value="other">משהו אחר</option>
+              </select>
+              <Icon name="down" size={16} />
+            </span>
+          </label>
+        )}
       </div>
       <input
         type="text"
@@ -141,9 +191,20 @@ export function LeadForm({
         className="button button-blue form-submit"
         type="submit"
         disabled={status === "pending"}
+        aria-busy={status === "pending"}
       >
-        {status === "pending" ? "בודקים את הפרטים…" : "נסו את טופס ההדגמה"}
-        <Icon name="sparkles" size={18} />
+        <span key={status === "pending" ? "pending" : "ready"} className="submit-label">
+          {status === "pending"
+            ? "שולחים את הפרטים…"
+            : recruitment
+              ? "שליחת מועמדות"
+              : "שליחת פרטים"}
+        </span>
+        <Icon
+          name={status === "pending" ? "loading" : "sparkles"}
+          size={18}
+          className={status === "pending" ? "submit-spinner" : ""}
+        />
       </button>
       <p className={`form-message ${status}`} role="status" aria-live="polite">
         {message}
