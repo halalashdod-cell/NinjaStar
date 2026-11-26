@@ -33,7 +33,7 @@ export const branches = [
   {
     id: "ashdod",
     name: "אשדוד",
-    slug: "על-המתחם",
+    slug: "סניף-אשדוד",
     label: "קניון בימול",
     address: "קניון בימול, אזור התעשייה עד הלום, אשדוד",
     location: "קומה 2",

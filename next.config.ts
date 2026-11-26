@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   async redirects() {
     return [
+      {
+        source: encodeURI("/על-המתחם/"),
+        destination: encodeURI("/סניף-אשדוד/"),
+        permanent: true,
+      },
       ...[
         "המתקנים-שלנו",
         "ninja-park-נינגה-פארק",
@@ -20,7 +25,7 @@ const nextConfig: NextConfig = {
       ...["מכוניות-מתנגשות", "מגרש-גימבורי-לילדים", "בור-הגומי"].map(
         (slug) => ({
           source: encodeURI(`/${slug}/`),
-          destination: encodeURI("/על-המתחם/#facilities"),
+          destination: encodeURI("/סניף-אשדוד/#facilities"),
           permanent: true,
         }),
       ),

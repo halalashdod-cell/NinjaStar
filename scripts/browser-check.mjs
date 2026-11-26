@@ -107,7 +107,7 @@ try {
   );
   await page.getByRole("button", { name: "פתיחת תפריט" }).click();
   await page.locator("#mobile-navigation").getByRole("link", { name: "אשדוד", exact: true }).click();
-  await page.waitForURL(/על-המתחם|%D7%A2%D7%9C-/i);
+  await page.waitForURL((url) => decodeURI(url.pathname) === "/סניף-אשדוד/");
   assert.equal(
     await page.locator("#facilities .attraction-card").count(),
     7,
@@ -119,7 +119,7 @@ try {
   assert.ok(
     (
       await page.locator(".price-card .button").first().getAttribute("href")
-    ).includes("על-המתחם"),
+    ).includes("סניף-אשדוד"),
   );
   assert.equal(
     await page.locator(".entry-link-panel a").getAttribute("href"),
@@ -134,7 +134,7 @@ try {
     path: "test-results/pricing-desktop.png",
     fullPage: true,
   });
-  await page.goto(origin + "/על-המתחם/", { waitUntil: "networkidle" });
+  await page.goto(origin + "/סניף-אשדוד/", { waitUntil: "networkidle" });
   assert.equal(
     await page.locator("select[name=branch]").inputValue(),
     "ashdod",

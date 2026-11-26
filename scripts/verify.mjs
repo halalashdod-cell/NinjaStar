@@ -13,7 +13,7 @@ async function recordSaved(id) {
 const routes = [
   "/",
   "/סניף-רחובות/",
-  "/על-המתחם/",
+  "/סניף-אשדוד/",
   "/סניף-הוד-השרון/",
   "/ימי-הולדת/",
   "/מחירון-כניסה/",
@@ -47,9 +47,9 @@ const retiredFacilities = [
   ["מתחם-הטרמפולינות", "/"],
   ["קיר-טיפוס", "/"],
   ["וויט-פול", "/"],
-  ["מכוניות-מתנגשות", "/על-המתחם/"],
-  ["מגרש-גימבורי-לילדים", "/על-המתחם/"],
-  ["בור-הגומי", "/על-המתחם/"],
+  ["מכוניות-מתנגשות", "/סניף-אשדוד/"],
+  ["מגרש-גימבורי-לילדים", "/סניף-אשדוד/"],
+  ["בור-הגומי", "/סניף-אשדוד/"],
 ];
 for (const [slug, destination] of retiredFacilities) {
   const encoded = encodeURI(`/${slug}/`);
@@ -61,6 +61,15 @@ for (const [slug, destination] of retiredFacilities) {
     assert.equal(location.hash, "#facilities", slug);
   }
 }
+for (const path of [encodeURI("/על-המתחם/"), encodeURI("/על-המתחם/").toLowerCase()]) {
+  const response = await fetch(origin + path + "?utm_source=google&utm_campaign=redirect-test&gclid=synthetic-click", { redirect: "manual" });
+  assert.equal(response.status, 308, "Old Ashdod address permanently redirects");
+  const location = new URL(response.headers.get("location"), origin);
+  assert.equal(decodeURI(location.pathname), "/סניף-אשדוד/");
+  assert.equal(location.searchParams.get("utm_source"), "google");
+  assert.equal(location.searchParams.get("utm_campaign"), "redirect-test");
+  assert.equal(location.searchParams.get("gclid"), "synthetic-click");
+}
 for (const path of ["/shop/", "/not-a-real-page/"])
   assert.equal(
     (await fetch(origin + path)).status,
@@ -68,6 +77,8 @@ for (const path of ["/shop/", "/not-a-real-page/"])
     `Missing page: ${path}`,
   );
 const sitemap = await (await fetch(origin + "/sitemap.xml")).text();
+assert.ok(decodeURI(sitemap).includes("https://ninja-star.co.il/סניף-אשדוד/"), "Sitemap includes new Ashdod URL");
+assert.ok(!decodeURI(sitemap).includes("/על-המתחם/"), "Sitemap excludes old Ashdod URL");
 assert.equal(
   (sitemap.match(/<url>/g) || []).length,
   routes.length,
@@ -120,7 +131,7 @@ assert.equal(
 );
 assert.equal((await submit(null)).status, 400);
 console.log(
-  `Verified ${routes.length} pages, 8 retired facility redirects, RTL, headings, canonical URLs, noindex, sitemap, 404s, ${persisted ? "saved submissions and retries" : "unconfigured storage fails honestly"}, and validation.`,
+  `Verified ${routes.length} pages, 8 retired facility redirects, Ashdod redirect with campaign preservation, RTL, headings, canonical URLs, noindex, sitemap, 404s, ${persisted ? "saved submissions and retries" : "unconfigured storage fails honestly"}, and validation.`,
 );
 if (persisted) {
   await mkdir("test-results", { recursive: true });

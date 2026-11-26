@@ -1,7 +1,8 @@
 path,page_type,demo_action
 /,homepage,retain
 /סניף-רחובות/,branch,retain
-/על-המתחם/,ashdod_branch,retain
+/על-המתחם/,legacy_branch,redirect_to_ashdod_branch
+/סניף-אשדוד/,ashdod_branch,new_path
 /סניף-הוד-השרון/,branch,retain
 /המתקנים-שלנו/,legacy_attractions,redirect_to_home_facilities
 /ימי-הולדת/,birthdays,retain

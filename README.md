@@ -33,6 +33,7 @@ npm run verify:video
 
 - Edit `src/lib/content.ts` for branch details, attractions, prices and FAQs.
 - Facilities appear as informational photos on the homepage and within each branch. The former catalogue and individual facility URLs permanently redirect to the relevant facilities section; they are excluded from the sitemap. See `docs/url-plan.csv`.
+- The Ashdod branch uses `/סניף-אשדוד/`. Its old `/על-המתחם/` address permanently redirects with query parameters preserved. Ashdod facility redirects point directly to the new branch URL.
 - The homepage reviews carousel contains selected excerpts from recent five-star Google reviews of all three branches. Source links and verification notes are kept in `docs/content-sources.md`; no heading, explanation or outbound links appear in the carousel. WhatsApp uses the number already linked from the existing site.
 - Photos and logo come from the existing `ninja-star.co.il`; source URLs are listed in `public/images/sources.json`.
 - Branch imagery is illustrative from the Ninja Star network. Confirm branch-specific photographs before production.
